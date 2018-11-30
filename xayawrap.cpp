@@ -21,7 +21,7 @@
 #include <glog/logging.h>
 
 typedef const char* (*INITIAL_CALLBACK)();
-typedef const char* (*FORWARD_CALLBACK)(const char*, const char*, const char*);
+typedef const char* (*FORWARD_CALLBACK)(const char*, const char*, const char*, const char**);
 typedef const char* (*BACKWARD_CALLBACK)(const char*, const char*, const char*);
 
 static INITIAL_CALLBACK initialCallback;
@@ -43,22 +43,6 @@ void
 on_sigabrt(int signum)
 {
   longjmp(env, 1);
-}
-
-/* Helper fucntion, until we
-   properly marshall strings out
-*/
-std::vector<std::string>
-explode(std::string const& s, char delim)
-{
-  std::vector<std::string> result;
-  std::istringstream iss(s);
-
-  for (std::string token; std::getline(iss, token, delim);) {
-    result.push_back(std::move(token));
-  }
-
-  return result;
 }
 
 xaya::GameStateData
@@ -92,22 +76,19 @@ xaya::GameStateData
 forward(xaya::Chain chain, const xaya::GameStateData& oldState,
         const Json::Value& blockData, xaya::UndoData& undoData)
 {
-
+  const char* newState;
   const std::string blockDataStr =
     Json::writeString(jsonWriterBuilder, blockData);
   const char* result =
-    forwardCallback(oldState.c_str(), blockDataStr.c_str(), undoData.c_str());
-
+    forwardCallback(oldState.c_str(), blockDataStr.c_str(), undoData.c_str(), &newState);
   std::string resultString;
+  
   (&resultString)->assign(result);
-
-  // This needs to be rewriten later
-  // with propetly marshalling strings out
-  // but will do for now
-  auto resData = explode(resultString, '~');
-
-  undoData = resData[1];
-  return resData[0];
+  std::string newStateString;
+  
+  (&newStateString)->assign(newState);  
+  undoData = resultString;
+  return newStateString;
 }
 
 xaya::GameStateData
