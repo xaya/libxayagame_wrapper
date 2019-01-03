@@ -14,13 +14,11 @@
 #include "xayagame/gamelogic.hpp"
 
 #include <json/json.h>
-
 #include <jsonrpccpp/client.h>
-#include <jsonrpccpp/client/connectors/tcpsocketclient.h>
 
 #include <glog/logging.h>
 
-typedef const char* (*INITIAL_CALLBACK)();
+typedef const char* (*INITIAL_CALLBACK)(unsigned&, const char**);
 typedef const char* (*FORWARD_CALLBACK)(const char*, const char*, const char*, const char**);
 typedef const char* (*BACKWARD_CALLBACK)(const char*, const char*, const char*);
 
@@ -48,28 +46,18 @@ on_sigabrt(int signum)
 xaya::GameStateData
 initial(xaya::Chain chain, unsigned& height, std::string& hashHex)
 {
-  if (sChain == 0) {
-    chain = xaya::Chain::MAIN;
-    height = 125000;
-    hashHex =
-      "2aed5640a3be8a2f32cdea68c3d72d7196a7efbfe2cbace34435a3eef97561f2";
-  }
 
-  if (sChain == 1) {
-    chain = xaya::Chain::TEST;
-    height = 10000;
-    hashHex =
-      "73d771be03c37872bc8ccd92b8acb8d7aa3ac0323195006fb3d3476784981a37";
-  }
-
-  if (sChain == 2) {
-    chain = xaya::Chain::REGTEST;
-    height = 0;
-    hashHex =
-      "6f750b36d22f1dc3d0a6e483af45301022646dfc3b3ba2187865f5a7d6d83ab1";
-  }
-
-  return initialCallback();
+  const char* hashHexFill;
+  unsigned heightS;
+  
+  initialCallback(heightS, &hashHexFill);
+  
+  std::string newStateString;
+  (&hashHex)->assign(hashHexFill);    
+  
+  height = heightS;
+  
+  return "";
 }
 
 xaya::GameStateData
@@ -156,25 +144,9 @@ ConnectToTheDaemon(std::string gameId, std::string XayaRpcUrl, int GameRpcPort,
   return 0;
 }
 
-extern "C" {
-XAYAWRAP_API void
-SignalStop()
+extern "C" 
 {
-  LOG(WARNING) << "Issue stop command at: " << sPort;
-  Json::Value p;
-  p = Json::nullValue;
-
-  jsonrpc::TcpSocketClient client("127.0.0.1", sPort);
-  jsonrpc::Client c(client);
-
-  try {
-    c.CallNotification("stop", p);
-    LOG(WARNING) << "Issued!";
-  } catch (jsonrpc::JsonRpcException& e) {
-    LOG(WARNING) << e.what();
-  }
-}
-
+	
 XAYAWRAP_API void
 setInitialCallback(INITIAL_CALLBACK callback)
 {
