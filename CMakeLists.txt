@@ -28,6 +28,7 @@ find_package(jsonrpccppclient REQUIRED)
 find_package(jsonrpccppserver REQUIRED)
 find_package(zmq REQUIRED)
 find_package(lmdb REQUIRED)
+find_package(openssl REQUIRED)
 
 include(FindProtobuf)
 find_package(Protobuf REQUIRED)
@@ -35,7 +36,7 @@ find_package(Protobuf REQUIRED)
 
 
 get_filename_component(HEADERS src REALPATH)
-include_directories(${LMDB_INCLUDE_DIR} ${ZMQ_INCLUDE_DIR} ${GFLAGS_INCLUDE_DIR} ${PROTOBUF_INCLUDE_DIR} ${SQLITE3_INCLUDE_DIR} ${JSONRPCCCPCLIENT_INCLUDE_DIR} ${JSONRPCCCP_CLIENT_LIBRARY} ${JSONRPCCCP_SERVER_LIBRARY} ${JSONRPCCCP_COMMON_LIBRARY}${JSONCPP_INCLUDE_DIR} ${XAYAGAME_INCLUDE_DIRS} ${GLOG_INCLUDE_DIRS} ${HEADERS})
+include_directories(${LMDB_INCLUDE_DIR} ${ZMQ_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${GFLAGS_INCLUDE_DIR} ${PROTOBUF_INCLUDE_DIR} ${SQLITE3_INCLUDE_DIR} ${JSONRPCCCPCLIENT_INCLUDE_DIR} ${JSONRPCCCP_CLIENT_LIBRARY} ${JSONRPCCCP_SERVER_LIBRARY} ${JSONRPCCCP_COMMON_LIBRARY}${JSONCPP_INCLUDE_DIR} ${XAYAGAME_INCLUDE_DIRS} ${GLOG_INCLUDE_DIRS} ${HEADERS})
 set(SOURCE_FILES xayawrap.cpp)
 
 add_library(xayawrap SHARED ${SOURCE_FILES})
@@ -50,6 +51,7 @@ add_library(jsonrpccppclient STATIC IMPORTED)
 add_library(jsonrpccppserver STATIC IMPORTED)
 add_library(zmq STATIC IMPORTED)
 add_library(lmdb STATIC IMPORTED)
+add_library(openssl STATIC IMPORTED)
 
 target_include_directories (xayawrap PUBLIC ${BASE_DIR})
 
@@ -66,6 +68,7 @@ ${SQLITE3_LIBRARY}
 ${GLOG_LIBRARY}
 ${ZMQ_LIBRARY}
 ${LMDB_LIBRARY}
+${OPENSSL_LIBRARY}
 stdc++fs
 )
 

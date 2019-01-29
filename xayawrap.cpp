@@ -83,10 +83,9 @@ xaya::GameStateData
 backward(xaya::Chain chain, const xaya::GameStateData& newState,
          const Json::Value& blockData, const xaya::UndoData& undoData)
 {
-  const std::string blockDataStr =
-    Json::writeString(jsonWriterBuilder, blockData);
-  const std::string newDataStr = Json::writeString(jsonWriterBuilder, newState);
-  return backwardCallback(newDataStr.c_str(), blockDataStr.c_str(),
+  const std::string blockDataStr = Json::writeString(jsonWriterBuilder, blockData);
+
+  return backwardCallback(newState.c_str(), blockDataStr.c_str(),
                           undoData.c_str());
 }
 
