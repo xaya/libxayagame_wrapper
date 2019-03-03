@@ -107,7 +107,6 @@ ConnectToTheDaemon(std::string gameId, std::string XayaRpcUrl, int GameRpcPort,
   xaya::GameDaemonConfiguration config;
   config.XayaRpcUrl = XayaRpcUrl;
   config.GameRpcPort = GameRpcPort;
-  config.GameRpcServer = xaya::RpcServerType::TCP;
   config.EnablePruning = EnablePruning;
 
   config.StorageType = storageType;
